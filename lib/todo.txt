@@ -1,0 +1,5 @@
+
+
+ - recording start stop 
+ - recording save in file 
+ - recording info save in sqflite DB

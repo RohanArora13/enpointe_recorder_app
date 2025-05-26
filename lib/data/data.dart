@@ -1,0 +1,1 @@
+export 'model/recording_model.dart';
