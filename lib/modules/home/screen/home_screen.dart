@@ -29,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
         // Stop recording
         _isRecordStarted = false;
         _stopTimer();
-        context.read<AudioCubit>().stopRecording();
+        context.read<AudioCubit>().stopRecording(context);
       }
     });
   }
@@ -67,11 +67,20 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // Get button color based on current state
-  Color _getButtonColor() {
+  Color _getButtonColor(ColorScheme colorScheme) {
     if (_isRecordStarted) {
-      return Colors.red.shade600;
+      return ColorScheme.dark().primaryContainer;
     } else {
-      return Colors.grey[600]!;
+      return colorScheme.primary;
+    }
+  }
+
+  // Get icon color based on current state
+  Color _getIconColor(ColorScheme colorScheme) {
+    if (_isRecordStarted) {
+      return ColorScheme.dark().onSecondaryContainer;
+    } else {
+      return colorScheme.onPrimary;
     }
   }
 
@@ -83,6 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return BlocConsumer<RecordBloc, RecordState>(
       listener: (context, state) {
         if (state is RecordSavedState) {
@@ -93,26 +103,55 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           );
         }
+
+        if (state is RecordSaveErrorState) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Save Error : ${state.error}'),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        }
       },
       builder: (context, state) {
         return Scaffold(
+          backgroundColor: colorScheme.surface,
           body: SafeArea(
             child: Column(
               children: [
-                Row(
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => HistoryScreen(),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => HistoryScreen(),
+                            ),
+                          );
+                        },
+                        icon: Icon(
+                          FontAwesomeIcons.clockRotateLeft,
+                          size: 16,
+                          color: colorScheme.onPrimary,
+                        ),
+                        label: Text(
+                          "History",
+                          style: TextStyle(
+                            color: colorScheme.onPrimary,
+                            fontWeight: FontWeight.w600,
                           ),
-                        );
-                      },
-                      child: Text("History"),
-                    ),
-                  ],
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: colorScheme.primary,
+                          foregroundColor: colorScheme.onPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 Expanded(
                   flex: 3,
@@ -126,10 +165,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             padding: const EdgeInsets.symmetric(vertical: 16.0),
                             child: Text(
                               _formatDuration(_recordingDuration),
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                                color: colorScheme.onSurface,
                               ),
                             ),
                           ),
@@ -155,10 +194,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                             );
                                           }
                                           if (snapshot.hasError) {
-                                            return const Text(
+                                            return Text(
                                               'Visualizer failed to load',
                                               style: TextStyle(
-                                                color: Colors.white,
+                                                color: colorScheme.error,
                                               ),
                                             );
                                           } else {
@@ -172,6 +211,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                     children: [
                                       Text(
                                         "Press Record to Start recording...",
+                                        style: TextStyle(
+                                          color: colorScheme.onSurfaceVariant,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -189,13 +233,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         padding: EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: _getButtonColor(),
+                          color: _getButtonColor(colorScheme),
                         ),
                         child: IconButton(
                           onPressed: _onRecordPressed,
                           icon: Icon(
                             _getButtonIcon(),
-                            color: Colors.white,
+                            color: _getIconColor(colorScheme),
                             size: 42,
                           ),
                           iconSize: 64,

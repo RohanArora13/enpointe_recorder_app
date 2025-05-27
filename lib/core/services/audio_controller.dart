@@ -17,6 +17,8 @@ class AudioPlayerController {
   }
 
   Stream<PlayerState> get playerState => _audioPlayer.playerStateStream;
+  
+  Stream<Duration> get positionStream => _audioPlayer.positionStream;
 
   Future<void> dispose() async {
     await _audioPlayer.dispose();

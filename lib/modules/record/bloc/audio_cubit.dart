@@ -82,7 +82,7 @@ class AudioCubit extends Cubit<AudioState> {
     }
   }
 
-  void stopRecording() async {
+  void stopRecording(BuildContext context) async {
     String? path = await _audioRecorder.stop();
     emit(RecordStopped());
 
@@ -90,7 +90,8 @@ class AudioCubit extends Cubit<AudioState> {
     
     // Add SaveRecordingEvent if path is not null
     if (path != null) {
-      final recordBloc = GetIt.instance<RecordBloc>();
+      // ignore: use_build_context_synchronously
+      final recordBloc = BlocProvider.of<RecordBloc>(context);
       recordBloc.add(SaveRecordingEvent(filePath: path));
     }
   }
