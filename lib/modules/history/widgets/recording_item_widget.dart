@@ -1,9 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:audio_app/core/services/audio_controller.dart';
 import 'package:intl/intl.dart';
-import 'package:just_audio/just_audio.dart';
-import '../../../data/model/recording_model.dart';
-import '../../../core/services/audio_controller.dart';
+
+import '../../../app/app.dart';
 import 'recording_info_dialog.dart';
 
 class RecordingItemWidget extends StatefulWidget {

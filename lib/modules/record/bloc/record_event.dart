@@ -12,3 +12,9 @@ class SaveRecordingEvent extends RecordEvent {
 class LoadRecordingsEvent extends RecordEvent {}
 
 class RefreshRecordingsEvent extends RecordEvent {}
+
+class DeleteRecordingEvent extends RecordEvent {
+  final RecordingModel recording;
+
+  DeleteRecordingEvent({required this.recording});
+}

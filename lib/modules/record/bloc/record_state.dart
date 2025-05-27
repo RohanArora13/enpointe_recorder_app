@@ -33,3 +33,17 @@ class RecordingsErrorState extends RecordState {
 
   RecordingsErrorState({required this.error});
 }
+
+class RecordDeletingState extends RecordState {}
+
+class RecordDeletedState extends RecordState {
+  final RecordingModel deletedRecording;
+
+  RecordDeletedState({required this.deletedRecording});
+}
+
+class RecordDeleteErrorState extends RecordState {
+  final String error;
+
+  RecordDeleteErrorState({required this.error});
+}

@@ -1,6 +1,7 @@
-import 'package:just_audio/just_audio.dart';
+import '../../app/app.dart';
 
 class AudioPlayerController {
+
   AudioPlayer _audioPlayer = AudioPlayer();
 
   Future<Duration?> setPath({required String filePath}) async {

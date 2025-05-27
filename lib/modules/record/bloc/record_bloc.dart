@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:uuid/uuid.dart';
-import 'package:just_audio/just_audio.dart';
 
 import '../../../app/app.dart';
 
@@ -15,6 +14,7 @@ class RecordBloc extends Bloc<RecordEvent, RecordState> {
     on<SaveRecordingEvent>(_onSaveRecording);
     on<LoadRecordingsEvent>(_onLoadRecordings);
     on<RefreshRecordingsEvent>(_onRefreshRecordings);
+    on<DeleteRecordingEvent>(_onDeleteRecording);
   }
 
   Future<void> _onSaveRecording(
@@ -110,6 +110,39 @@ class RecordBloc extends Bloc<RecordEvent, RecordState> {
       }
     } catch (e) {
       emit(RecordingsErrorState(error: 'Failed to load recordings: $e'));
+    }
+  }
+
+  Future<void> _onDeleteRecording(
+    DeleteRecordingEvent event,
+    Emitter<RecordState> emit,
+  ) async {
+    emit(RecordDeletingState());
+
+    try {
+      // Delete from database
+      await _databaseService.deleteRecording(event.recording.uniqueId);
+
+      // Try to delete the physical file as well
+      try {
+        final file = File(event.recording.filePath);
+        if (await file.exists()) {
+          await file.delete();
+          debugPrint("Physical file deleted: ${event.recording.filePath}");
+        }
+      } catch (fileError) {
+        // Log file deletion error but don't fail the entire operation
+        debugPrint("Failed to delete physical file: $fileError");
+      }
+
+      emit(RecordDeletedState(deletedRecording: event.recording));
+      debugPrint("Recording deleted successfully!");
+
+      // Refresh the recordings list after deletion
+      await _loadRecordingsFromDatabase(emit);
+    } catch (e) {
+      emit(RecordDeleteErrorState(error: 'Failed to delete recording: $e'));
+      debugPrint("Recording deletion failed: $e");
     }
   }
 }

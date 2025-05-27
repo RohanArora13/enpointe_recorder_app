@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../app/app.dart';
 
@@ -57,36 +56,13 @@ class _HomeScreenState extends State<HomeScreen> {
     return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
   }
 
-  // Get appropriate icon based on current state
-  IconData _getButtonIcon() {
-    if (_isRecordStarted) {
-      return FontAwesomeIcons.stop;
-    } else {
-      return FontAwesomeIcons.microphone;
-    }
-  }
-
-  // Get button color based on current state
-  Color _getButtonColor(ColorScheme colorScheme) {
-    if (_isRecordStarted) {
-      return ColorScheme.dark().primaryContainer;
-    } else {
-      return colorScheme.primary;
-    }
-  }
-
-  // Get icon color based on current state
-  Color _getIconColor(ColorScheme colorScheme) {
-    if (_isRecordStarted) {
-      return ColorScheme.dark().onSecondaryContainer;
-    } else {
-      return colorScheme.onPrimary;
-    }
-  }
-
   @override
   void dispose() {
     _stopTimer();
+    // Stop recording if it's currently active when disposing (app crash/force close)
+    if (_isRecordStarted) {
+      context.read<AudioCubit>().stopRecording(context);
+    }
     super.dispose();
   }
 
@@ -188,7 +164,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 .aplitudeStream(),
                                         builder: (context, snapshot) {
                                           if (snapshot.hasData) {
-                                            return VisualIndicator(
+                                            return SmoothBarVisualizer(
                                               amplitude: snapshot.data,
                                               startedAudio: _isRecordStarted,
                                             );
@@ -210,7 +186,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   : Column(
                                     children: [
                                       Text(
-                                        "Press Record to Start recording...",
+                                        "Press 'Mic Icon' to start recording...",
                                         style: TextStyle(
                                           color: colorScheme.onSurfaceVariant,
                                           fontSize: 16,
@@ -233,13 +209,21 @@ class _HomeScreenState extends State<HomeScreen> {
                         padding: EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: _getButtonColor(colorScheme),
+                          color:
+                              _isRecordStarted
+                                  ? ColorScheme.dark().primaryContainer
+                                  : colorScheme.primary,
                         ),
                         child: IconButton(
                           onPressed: _onRecordPressed,
                           icon: Icon(
-                            _getButtonIcon(),
-                            color: _getIconColor(colorScheme),
+                            _isRecordStarted
+                                ? FontAwesomeIcons.stop
+                                : FontAwesomeIcons.microphone,
+                            color:
+                                _isRecordStarted
+                                    ? ColorScheme.dark().onSecondaryContainer
+                                    : colorScheme.onPrimary,
                             size: 42,
                           ),
                           iconSize: 64,
