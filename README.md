@@ -3,12 +3,10 @@
 A Flutter-based audio recording application built for Enpointe assignment. This app provides a clean, modern interface for recording, storing, and managing audio files 
 
 ## Video Demo
+https://www.youtube.com/watch?v=9w-w8P4hbZU
 
-
-
-
-
-
+## APK Download
+https://drive.google.com/file/d/1FK6kzwcZm5AxNnX9wR-m__z5SZkVIkcQ/view?usp=sharing
 
 ## 📱 Features
 
