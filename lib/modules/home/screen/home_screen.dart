@@ -73,16 +73,16 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         _handleAppDetached();
         break;
       case AppLifecycleState.paused:
-        // App is being detached or paused, stop recording if active
+        // App is being  paused, 
         break;
       case AppLifecycleState.resumed:
-        // App is resumed, you can add logic here if needed
+        // App is resumed,
         break;
       case AppLifecycleState.inactive:
-        // App is inactive (e.g., during phone call), you can add logic here if needed
+        // App is inactive (e.g., during phone call), 
         break;
       case AppLifecycleState.hidden:
-        // App is hidden, you can add logic here if needed
+        // App is hidden,
         break;
     }
   }
