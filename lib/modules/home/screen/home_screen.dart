@@ -9,7 +9,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   bool _isRecordStarted = false;
 
   // Timer related variables
@@ -57,7 +57,53 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    // Add observer to listen for app lifecycle changes
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    // Handle app lifecycle changes
+    switch (state) {
+      case AppLifecycleState.detached:
+        _handleAppDetached();
+        break;
+      case AppLifecycleState.paused:
+        // App is being detached or paused, stop recording if active
+        break;
+      case AppLifecycleState.resumed:
+        // App is resumed, you can add logic here if needed
+        break;
+      case AppLifecycleState.inactive:
+        // App is inactive (e.g., during phone call), you can add logic here if needed
+        break;
+      case AppLifecycleState.hidden:
+        // App is hidden, you can add logic here if needed
+        break;
+    }
+  }
+
+  // Handle app detached/paused state
+  void _handleAppDetached() {
+    print("_handleAppDetached");
+    if (_isRecordStarted) {
+      // Stop recording when app is detached/paused
+      setState(() {
+        _isRecordStarted = false;
+        _stopTimer();
+      });
+      context.read<AudioCubit>().stopRecording(context);
+    }
+  }
+
+  @override
   void dispose() {
+    // Remove observer before disposing
+    WidgetsBinding.instance.removeObserver(this);
     _stopTimer();
     // Stop recording if it's currently active when disposing (app crash/force close)
     if (_isRecordStarted) {
